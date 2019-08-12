@@ -1,14 +1,60 @@
 use std::str::FromStr;
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub struct Component{
 	pub exponent: i32,
 	pub factor: f64,
 }
 
-fn solve_first_deg_eq(components: Vec<Component>) -> () {
-	let diviz: f64 = components.last().unwrap().factor;
-	let divid: f64 = components.first().unwrap().factor;
+fn	get_delta(components: Vec<Component>) -> f64 {
+	let c: f64 = components[0].factor;
+	let b: f64 = components[1].factor;
+	let a: f64 = components[2].factor;
+
+	b.powi(2) - (4.0 * a * c)
+}
+
+fn	solve_second_deg_eq(components: Vec<Component>) -> () {
+	let delta: f64 = get_delta(components.clone());
+	println!("∆ :{:?}", delta);	
+	if delta < 0.0 {
+		println!("Discriminant is strictly negative, the solution is:");
+		println!("Ø");
+	}
+	else if delta == 0.0 {
+		println!("Discriminant is strictly positive, the solution is:");
+		println!("{}",
+		(-1.0 * components[1].factor) / (2.0 * components[2].factor));
+	}
+	else if delta > 0.0 {
+		println!("Discriminant is strictly positive, the two solutions are:");
+		//(-b - √∆) / 2a	
+		println!("{}",
+		((-1.0 * components[1].factor - delta.sqrt()))
+		/ (2.0 * components[2].factor));
+		//(-b + √∆) / 2a
+		println!("{}",
+		((-1.0 * components[1].factor + delta.sqrt()))
+		/ (2.0 * components[2].factor));
+	}
+}
+
+fn solve_first_deg_eq(mut components: Vec<Component>) -> () {
+	let mut components_bis: Vec<Component> = components.clone();
+	let mut divid: f64 = 0.0;
+	let mut diviz: f64 = 0.0;
+	components.retain(|&x| x.exponent == 0);
+	components_bis.retain(|&x| x.exponent == 1);
+
+	if components.len() > 0 {
+		println!("{:?}", components);
+		divid = components.first().unwrap().factor;
+	}
+	if components_bis.len() > 0 {
+		println!("{:?}", components_bis);
+
+		diviz = components_bis.first().unwrap().factor;
+	}
 	if diviz == 0.0 {
 		if divid == 0.0 {
 			println!("Tous les nombres Réels sont solutions.");
@@ -92,6 +138,7 @@ fn get_components(eq: &str) -> Vec<Component> {
 		components.push(comp);
 	}
 	components.sort_by(|a, b| a.exponent.cmp(&b.exponent));
+	components.retain(|&x| x.factor != 0.0);
 	components
 }
 
@@ -134,6 +181,9 @@ fn reduce_eq(components: Vec<Component>) -> String {
 		}
 		i = i + 1;
 	}
+	if components.len() == 0 {
+		reduce_string.push_str("0");
+	}
 	reduce_string.push_str(" = 0".into());
 	reduce_string
 }
@@ -148,9 +198,15 @@ pub fn get_eq_degree_from_str(eq: &str) -> i32 {
 	get_degree(components)
 }
 
+
+// TODO: MANAGE IF A == 0 !!
 pub fn solve_eq(eq: &str) -> (){
 	let components: Vec<Component> = get_components(eq);
 	println!("Reduced form: {}", reduce_eq(components.clone()));
+	if components.len() == 0 {
+		println!("This is not an equation");
+		return ();
+	}
 	let degree:i32 = get_degree(components.clone());
 	println!("Polynomial degree: {}", degree);
 	if degree > 2 {
@@ -168,7 +224,7 @@ pub fn solve_eq(eq: &str) -> (){
 		solve_first_deg_eq(components);
 	}
 	else if degree == 2 {
-
+		solve_second_deg_eq(components);
 	}
 }
 
