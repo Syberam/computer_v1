@@ -7,7 +7,19 @@ pub struct Component{
 }
 
 fn solve_first_deg_eq(components: Vec<Component>) -> () {
-	unimplemented!();
+	let diviz: f64 = components.last().unwrap().factor;
+	let divid: f64 = components.first().unwrap().factor;
+	if diviz == 0.0 {
+		if divid == 0.0 {
+			println!("Tous les nombres Réels sont solutions.");
+		}
+		else {
+			println!("Aucune solution n'est possible.");
+		}
+	} else {
+		let solution: f64= divid / diviz;
+		println!("The solution is:\n{}", solution);
+	}
 }
 
 fn solve_zero_deg_eq(components: Vec<Component>) -> () {
