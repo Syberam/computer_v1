@@ -1,16 +1,46 @@
 use std::str::FromStr;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Component{
-	pub exponent: u32,
+	pub exponent: i32,
 	pub factor: f64,
 }
 
-fn get_components(left: Vec<String>, right: Vec<String>) -> Vec<Component> {
+fn solve_first_deg_eq(components: Vec<Component>) -> () {
+	unimplemented!();
+}
+
+fn solve_zero_deg_eq(components: Vec<Component>) -> () {
+	let factor: f64 = components.last().unwrap().factor;
+	if factor == 0.0 {
+		println!("Tous les nombres Réels sont solutions.");
+	}
+	else {
+		println!("Aucune solution n'est possible.");
+	}
+}
+
+fn get_degree(components: Vec<Component>) -> i32 {
+	let deg_max: i32 = components.last().unwrap().exponent;
+	let deg_min: i32 = components.first().unwrap().exponent;
+	if deg_max < 3 && deg_min < 0 {
+		return deg_min
+	}
+	deg_max
+}
+
+fn get_components(eq: &str) -> Vec<Component> {
 	let mut components: Vec<Component> = Vec::new();
+	let sub_strings: Vec<&str> = eq.split(" = ").collect();
+	if sub_strings.len() != 2 {
+		println!("not well format");
+		return components
+	}
+	let left: Vec<String> = get_substrings(sub_strings[0]);
+	let right: Vec<String> = get_substrings(sub_strings[1]);
 	for elem in left.iter(){
 		let sub: Vec<&str> = elem.split(" * X^").collect();
-		let exponent: u32 = u32::from_str(sub[1]).unwrap();
+		let exponent: i32 = i32::from_str(sub[1]).unwrap();
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
 		let mut i:usize = 0;
 		for comp in components.iter() {
@@ -27,7 +57,7 @@ fn get_components(left: Vec<String>, right: Vec<String>) -> Vec<Component> {
 	}
 	for elem in right.iter(){
 		let sub: Vec<&str> = elem.split(" * X^").collect();
-		let exponent: u32 = u32::from_str(sub[1]).unwrap();
+		let exponent: i32 = i32::from_str(sub[1]).unwrap();
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
 		let mut i:usize = 0;
 		for comp in components.iter() {
@@ -42,6 +72,7 @@ fn get_components(left: Vec<String>, right: Vec<String>) -> Vec<Component> {
 			exponent: exponent, factor: factor};
 		components.push(comp);
 	}
+	components.sort_by(|a, b| a.exponent.cmp(&b.exponent));
 	components
 }
 
@@ -62,17 +93,10 @@ pub fn get_substrings(eq: &str) -> Vec<String> {
 	sub_strings
 }
 
-pub fn reduce(eq: &str) -> String {
-	let sub_strings: Vec<&str> = eq.split(" = ").collect();
-	if sub_strings.len() != 2 {
-		return "not well format".into()
-	}
-	let left: Vec<String> = get_substrings(sub_strings[0]);
-	let right: Vec<String> = get_substrings(sub_strings[1]);
-	let mut components: Vec<Component> = get_components(left, right);
-	components.sort_by(|a, b| a.exponent.cmp(&b.exponent));
+fn reduce_eq(components: Vec<Component>) -> String {
 	let mut reduce_string: String = String::new();
 	let mut i = 0;
+
 	for comp in components.iter() {
 		if i == 0 {
 			reduce_string.push_str(
@@ -92,6 +116,57 @@ pub fn reduce(eq: &str) -> String {
 		i = i + 1;
 	}
 	reduce_string.push_str(" = 0".into());
-	println!("{:?}", reduce_string);
 	reduce_string
 }
+
+pub fn reduce_from_str(eq: &str) -> String {
+	let components: Vec<Component> = get_components(eq);
+	reduce_eq(components)
+}
+
+pub fn get_eq_degree_from_str(eq: &str) -> i32 {
+	let components: Vec<Component> = get_components(eq);
+	get_degree(components)
+}
+
+pub fn solve_eq(eq: &str) -> (){
+	let components: Vec<Component> = get_components(eq);
+	println!("Reduced form: {}", reduce_eq(components.clone()));
+	let degree:i32 = get_degree(components.clone());
+	println!("Polynomial degree: {}", degree);
+	if degree > 2 {
+		println!("{} {}", "The polynomial degree is",
+		"stricly greater than 2, I can't solve.")
+	}
+	else if degree < 0 {
+		println!("{} {}", "An exponent is",
+		"stricly smaller than 0, I can't solve.")
+	}
+	else if degree == 0 {
+		solve_zero_deg_eq(components);
+	}
+	else if degree == 1 {
+		solve_first_deg_eq(components);
+	}
+	else if degree == 2 {
+
+	}
+}
+
+
+
+// $>./computor "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"
+// Reduced form: 4 * X^0 + 4 * X^1 - 9.3 * X^2 = 0
+// Polynomial degree: 2
+// Discriminant is strictly positive, the two solutions are:
+// 0.905239
+// -0.475131
+// $>./computor "5 * X^0 + 4 * X^1 = 4 * X^0"
+// Reduced form: 1 * X^0 + 4 * X^1 = 0
+// Polynomial degree: 1
+// The solution is:
+// -0.25
+// ./computor "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0"
+// Reduced form: 5 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 0
+// Polynomial degree: 3
+// The polynomial degree is stricly greater than 2, I can't solve.
