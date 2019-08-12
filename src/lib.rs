@@ -69,8 +69,12 @@ fn get_components(eq: &str) -> Vec<Component> {
 	}
 	for elem in right.iter(){
 		let sub: Vec<&str> = elem.split(" * X^").collect();
-		let exponent: i32 = i32::from_str(sub[1]).unwrap();
+
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
+		let mut exponent: i32 = 0;
+		if sub.len() > 1 {
+			exponent = i32::from_str(sub[1]).unwrap();
+		}
 		let mut i:usize = 0;
 		for comp in components.iter() {
 			if comp.exponent == exponent {
