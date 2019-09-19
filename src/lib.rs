@@ -88,8 +88,15 @@ fn get_degree(components: Vec<Component>) -> i32 {
 }
 
 fn get_components(eq: &str) -> Vec<Component> {
-	let mut components: Vec<Component> = Vec::new();
-	let sub_strings: Vec<&str> = eq.split(" = ").collect();
+	let mut components: Vec<Component> = vec![
+		Component{exponent: 0, factor: 0.0},
+		Component{exponent: 1, factor: 0.0},
+		Component{exponent: 2, factor: 0.0}];
+	let mut eq = eq.replace(" ", "");
+	eq = eq.replace("*", "");
+	eq = eq.replace("X", "X^1");
+	eq = eq.replace("X^1^", "X^");
+	let sub_strings: Vec<&str> = eq.split("=").collect();
 	if sub_strings.len() != 2 {
 		println!("not well format");
 		return components
@@ -97,7 +104,7 @@ fn get_components(eq: &str) -> Vec<Component> {
 	let left: Vec<String> = get_substrings(sub_strings[0]);
 	let right: Vec<String> = get_substrings(sub_strings[1]);
 	for elem in left.iter(){
-		let sub: Vec<&str> = elem.split(" * X^").collect();
+		let sub: Vec<&str> = elem.split("X^").collect();
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
 		let mut exponent: i32 = 0;
 		if sub.len() > 1 {
@@ -117,7 +124,7 @@ fn get_components(eq: &str) -> Vec<Component> {
 		components.push(comp);
 	}
 	for elem in right.iter(){
-		let sub: Vec<&str> = elem.split(" * X^").collect();
+		let sub: Vec<&str> = elem.split("X^").collect();
 
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
 		let mut exponent: i32 = 0;
@@ -167,7 +174,7 @@ fn reduce_eq(components: Vec<Component>) -> String {
 		if i == 0 {
 			reduce_string.push_str(
 				&format!("{} * X^{}", comp.factor, comp.exponent)
-								);
+			);
 		}
 		else if comp.factor < 0.0 {
 			reduce_string.push_str(
