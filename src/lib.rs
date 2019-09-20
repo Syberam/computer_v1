@@ -90,6 +90,8 @@ fn get_components(eq: &str) -> Vec<Component> {
 		Component{exponent: 1, factor: 0.0},
 		Component{exponent: 2, factor: 0.0}];
 	let eq = eq.replace(" ", "")
+		.replace("³", "^3")
+		.replace("²", "^2")
 		.replace("*", "")
 		.replace("X", "X^1")
 		.replace("X^1^", "X^")
@@ -214,6 +216,7 @@ pub fn get_eq_degree_from_str(eq: &str) -> i32 {
 
 // TODO: MANAGE IF A == 0 !!
 pub fn solve_eq(eq: &str) -> (){
+	let eq: &str = &eq.to_ascii_uppercase();
 	let components: Vec<Component> = get_components(eq);
 	let reduce_form = reduce_eq(components.clone());
 	println!("Reduced form: {}", reduce_form);
