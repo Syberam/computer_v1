@@ -47,23 +47,20 @@ fn solve_first_deg_eq(mut components: Vec<Component>) -> () {
 	components_bis.retain(|&x| x.exponent == 1);
 
 	if components.len() > 0 {
-		println!("{:?}", components);
 		divid = components.first().unwrap().factor;
 	}
 	if components_bis.len() > 0 {
-		println!("{:?}", components_bis);
-
 		diviz = components_bis.first().unwrap().factor;
 	}
 	if diviz == 0.0 {
 		if divid == 0.0 {
-			println!("Tous les nombres Réels sont solutions.");
+			println!("Every ℝéels numbers can be the solution.");
 		}
 		else {
-			println!("Aucune solution n'est possible.");
+			println!("No solution is possible.");
 		}
 	} else {
-		let solution: f64= divid / diviz;
+		let solution: f64 = -divid / diviz;
 		println!("The solution is:\n{}", solution);
 	}
 }
@@ -71,10 +68,10 @@ fn solve_first_deg_eq(mut components: Vec<Component>) -> () {
 fn solve_zero_deg_eq(components: Vec<Component>) -> () {
 	let factor: f64 = components.last().unwrap().factor;
 	if factor == 0.0 {
-		println!("Tous les nombres Réels sont solutions.");
+		println!("Every ℝéels numbers can be the solution.");
 	}
 	else {
-		println!("Aucune solution n'est possible.");
+		println!("No solution is possible.");
 	}
 }
 
@@ -92,21 +89,30 @@ fn get_components(eq: &str) -> Vec<Component> {
 		Component{exponent: 0, factor: 0.0},
 		Component{exponent: 1, factor: 0.0},
 		Component{exponent: 2, factor: 0.0}];
-	let mut eq = eq.replace(" ", "");
-	eq = eq.replace("*", "");
-	eq = eq.replace("X", "X^1");
-	eq = eq.replace("X^1^", "X^");
-	eq = eq.replace(" + ", "+");
-	eq = eq.replace(" - ", "-");
-	eq = eq.replace("-", "+-");
-	eq = eq.replace("^+", "^");
+	let eq = eq.replace(" ", "")
+		.replace("*", "")
+		.replace("X", "X^1")
+		.replace("X^1^", "X^")
+		.replace(" + ", "+")
+		.replace(" - ", "-")
+		.replace("-", "+-")
+		.replace("^+", "^")
+		.replace("-X", "-1X");
 	let sub_strings: Vec<&str> = eq.split("=").collect();
 	if sub_strings.len() != 2 {
 		println!("not well format");
 		return components
 	}
-	let left: Vec<&str> = get_substrings(sub_strings[0]);
-	let right: Vec<&str> = get_substrings(sub_strings[1]);
+	let left_string = match sub_strings[0].chars().nth(0).unwrap() {
+			'+' => sub_strings[0].replacen("+", "0+", 1).clone(),
+			_ => format!("0+{}",sub_strings[0]),
+	};
+	let right_string = match sub_strings[1].chars().nth(0).unwrap() {
+			'+' => sub_strings[1].replacen("+", "0+", 1).clone(),
+			_ => format!("0+{}",sub_strings[1]),
+	};
+	let left: Vec<&str> = get_substrings(&left_string);
+	let right: Vec<&str> = get_substrings(&right_string);
 	for elem in left.iter() {
 		let elem = match elem.chars().nth(0).unwrap() {
 			'X' => elem.replace("X", "1X"),
@@ -114,10 +120,10 @@ fn get_components(eq: &str) -> Vec<Component> {
 		};
 		let sub: Vec<&str> = elem.split("X^").collect();
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
-		let mut exponent: i32 = 0;
-		if sub.len() > 1 {
-			exponent = i32::from_str(sub[1]).unwrap();
-		}
+		let exponent: i32 = match sub.len() {
+			1 => 0,
+			_ => i32::from_str(sub[1]).unwrap(),
+		};
 		let mut i:usize = 0;
 		for comp in components.iter() {
 			if comp.exponent == exponent {
@@ -132,13 +138,16 @@ fn get_components(eq: &str) -> Vec<Component> {
 		components.push(comp);
 	}
 	for elem in right.iter(){
+		let elem = match elem.chars().nth(0).unwrap() {
+			'X' => elem.replace("X", "1X"),
+			_ => elem.to_string(),
+		};
 		let sub: Vec<&str> = elem.split("X^").collect();
-
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
-		let mut exponent: i32 = 0;
-		if sub.len() > 1 {
-			exponent = i32::from_str(sub[1]).unwrap();
-		}
+		let exponent: i32 = match sub.len() {
+			1 => 0,
+			_ => i32::from_str(sub[1]).unwrap(),
+		};
 		let mut i:usize = 0;
 		for comp in components.iter() {
 			if comp.exponent == exponent {
@@ -153,7 +162,9 @@ fn get_components(eq: &str) -> Vec<Component> {
 		components.push(comp);
 	}
 	components.sort_by(|a, b| a.exponent.cmp(&b.exponent));
-	components.retain(|&x| x.factor != 0.0);
+	if components.len() <= 3 {
+		components.retain(|&x| x.factor != 0.0);
+	}
 	components
 }
 
@@ -165,7 +176,6 @@ pub fn get_substrings(eq: &str) -> Vec<&str> {
 fn reduce_eq(components: Vec<Component>) -> String {
 	let mut reduce_string: String = String::new();
 	let mut i = 0;
-
 	for comp in components.iter() {
 		if i == 0 {
 			reduce_string.push_str(
@@ -205,7 +215,12 @@ pub fn get_eq_degree_from_str(eq: &str) -> i32 {
 // TODO: MANAGE IF A == 0 !!
 pub fn solve_eq(eq: &str) -> (){
 	let components: Vec<Component> = get_components(eq);
-	println!("Reduced form: {}", reduce_eq(components.clone()));
+	let reduce_form = reduce_eq(components.clone());
+	println!("Reduced form: {}", reduce_form);
+	if reduce_form == "0 = 0" && eq.contains("X") {
+		println!("Every ℝéels numbers can be the solution.");
+		return ();
+	}
 	if components.len() == 0 {
 		println!("This is not an equation");
 		return ();
