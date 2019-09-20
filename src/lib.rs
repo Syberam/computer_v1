@@ -96,14 +96,22 @@ fn get_components(eq: &str) -> Vec<Component> {
 	eq = eq.replace("*", "");
 	eq = eq.replace("X", "X^1");
 	eq = eq.replace("X^1^", "X^");
+	eq = eq.replace(" + ", "+");
+	eq = eq.replace(" - ", "-");
+	eq = eq.replace("-", "+-");
+	eq = eq.replace("^+", "^");
 	let sub_strings: Vec<&str> = eq.split("=").collect();
 	if sub_strings.len() != 2 {
 		println!("not well format");
 		return components
 	}
-	let left: Vec<String> = get_substrings(sub_strings[0]);
-	let right: Vec<String> = get_substrings(sub_strings[1]);
-	for elem in left.iter(){
+	let left: Vec<&str> = get_substrings(sub_strings[0]);
+	let right: Vec<&str> = get_substrings(sub_strings[1]);
+	for elem in left.iter() {
+		let elem = match elem.chars().nth(0).unwrap() {
+			'X' => elem.replace("X", "1X"),
+			_ => elem.to_string(),
+		};
 		let sub: Vec<&str> = elem.split("X^").collect();
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
 		let mut exponent: i32 = 0;
@@ -149,20 +157,8 @@ fn get_components(eq: &str) -> Vec<Component> {
 	components
 }
 
-pub fn get_substrings(eq: &str) -> Vec<String> {
-	let mut sub_strings: Vec<String> = Vec::new();
-	let sub_strings_pos: Vec<&str> = eq.split(" + ").collect();
-	for sub_string in sub_strings_pos {
-		let sub_strings_neg: Vec<&str> = sub_string.split(" - ").collect();
-		if sub_strings_neg.len() == 1 {
-			sub_strings.push(sub_string.to_string());
-		}
-		else {
-			let neg: String = "-".to_owned() + sub_strings_neg[1];
-			sub_strings.push(sub_strings_neg[0].to_string());
-			sub_strings.push(neg.to_string());
-		}
-	}
+pub fn get_substrings(eq: &str) -> Vec<&str> {
+	let sub_strings: Vec<&str> = eq.split("+").to_owned().collect();
 	sub_strings
 }
 
