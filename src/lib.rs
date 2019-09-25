@@ -1,5 +1,25 @@
 use std::str::FromStr;
 
+pub trait CharExt {
+	fn is_equation(self) -> bool;
+}
+impl CharExt for char {
+    #[inline]
+    fn is_equation(self) -> bool {
+        match self {
+            '0'..='9' => true,
+            'X' => true,
+			'*' => true,
+			'+' => true,
+			'-' => true,
+			'=' => true,
+			'^' => true,
+			_ => false,
+        }
+    }
+}
+
+
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub struct Component{
 	pub exponent: i32,
@@ -89,7 +109,7 @@ fn get_components(eq: &str) -> Vec<Component> {
 		Component{exponent: 0, factor: 0.0},
 		Component{exponent: 1, factor: 0.0},
 		Component{exponent: 2, factor: 0.0}];
-	let eq = eq.replace(" ", "")
+	let eq = eq.replace(char::is_whitespace, "")
 		.replace("³", "^3")
 		.replace("²", "^2")
 		.replace("*", "")
@@ -100,6 +120,10 @@ fn get_components(eq: &str) -> Vec<Component> {
 		.replace("-", "+-")
 		.replace("^+", "^")
 		.replace("-X", "-1X");
+	if !eq.chars().all(CharExt::is_equation) {
+		println!("Entry equation not well format !");
+		return components
+	}
 	let sub_strings: Vec<&str> = eq.split("=").collect();
 	if sub_strings.len() != 2 {
 		println!("not well format");
@@ -218,6 +242,9 @@ pub fn get_eq_degree_from_str(eq: &str) -> i32 {
 pub fn solve_eq(eq: &str) -> (){
 	let eq: &str = &eq.to_ascii_uppercase();
 	let components: Vec<Component> = get_components(eq);
+	if components.is_empty() {
+		return ();
+	}
 	let reduce_form = reduce_eq(components.clone());
 	println!("Reduced form: {}", reduce_form);
 	if reduce_form == "0 = 0" && eq.contains("X") {
