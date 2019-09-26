@@ -3,17 +3,14 @@ use std::str::FromStr;
 pub trait CharExt {
 	fn is_equation(self) -> bool;
 }
+
 impl CharExt for char {
     #[inline]
     fn is_equation(self) -> bool {
         match self {
             '0'..='9' => true,
             'X' => true,
-			'*' => true,
-			'+' => true,
-			'-' => true,
-			'=' => true,
-			'^' => true,
+			'*' | '+' | '-' | '=' | '^' | '.' => true,
 			_ => false,
         }
     }
@@ -122,6 +119,7 @@ fn get_components(eq: &str) -> Vec<Component> {
 		.replace("-X", "-1X");
 	if !eq.chars().all(CharExt::is_equation) {
 		println!("Entry equation not well format !");
+		components = Vec::new();
 		return components
 	}
 	let sub_strings: Vec<&str> = eq.split("=").collect();
