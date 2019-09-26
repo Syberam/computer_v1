@@ -10,7 +10,7 @@ impl CharExt for char {
         match self {
             '0'..='9' => true,
             'X' => true,
-			'*' | '+' | '-' | '=' | '^' | '.' => true,
+			'*' | '+' | '-' | '=' | '^' | '.' | '³' | '²' => true,
 			_ => false,
         }
     }
@@ -107,16 +107,18 @@ fn get_components(eq: &str) -> Vec<Component> {
 		Component{exponent: 1, factor: 0.0},
 		Component{exponent: 2, factor: 0.0}];
 	let eq = eq.replace(char::is_whitespace, "")
+		.replace("^+", "^")
+		.replace("x", "X")
 		.replace("³", "^3")
 		.replace("²", "^2")
 		.replace("*", "")
 		.replace("X", "X^1")
-		.replace("X^1^", "X^")
+		.replace("X^1^", "X")
 		.replace(" + ", "+")
 		.replace(" - ", "-")
 		.replace("-", "+-")
-		.replace("^+", "^")
 		.replace("-X", "-1X");
+	println!("simplified eq : {:?}", eq);
 	if !eq.chars().all(CharExt::is_equation) {
 		println!("Entry equation not well format !");
 		components = Vec::new();
@@ -137,17 +139,32 @@ fn get_components(eq: &str) -> Vec<Component> {
 	};
 	let left: Vec<&str> = get_substrings(&left_string);
 	let right: Vec<&str> = get_substrings(&right_string);
+	println!("LEFT : {:?}", left);
+	println!("RIGHT : {:?}", right);
 	for elem in left.iter() {
 		let elem = match elem.chars().nth(0).unwrap() {
 			'X' => elem.replace("X", "1X"),
 			_ => elem.to_string(),
 		};
-		let sub: Vec<&str> = elem.split("X^").collect();
+		let mut sub: Vec<&str> = elem.split("X").collect();
+		println!("SUB :{:?}", sub);
+		for mut part in sub {
+			let split_part: Vec<&str> = part.split("^").collect();
+			part = match split_part.len() {
+				1 => split_part[0],
+				_ => &f64::from_str(split_part[0])
+					.unwrap()
+					.powf(f64::from_str(split_part[0]).unwrap())
+					.to_string(),
+		};
+			
+		}
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
 		let exponent: i32 = match sub.len() {
 			1 => 0,
 			_ => i32::from_str(sub[1]).unwrap(),
 		};
+		println!("exponent : {:?}", exponent);
 		let mut i:usize = 0;
 		for comp in components.iter() {
 			if comp.exponent == exponent {
@@ -166,7 +183,7 @@ fn get_components(eq: &str) -> Vec<Component> {
 			'X' => elem.replace("X", "1X"),
 			_ => elem.to_string(),
 		};
-		let sub: Vec<&str> = elem.split("X^").collect();
+		let sub: Vec<&str> = elem.split("X").collect();
 		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
 		let exponent: i32 = match sub.len() {
 			1 => 0,
@@ -189,6 +206,7 @@ fn get_components(eq: &str) -> Vec<Component> {
 	if components.len() <= 3 {
 		components.retain(|&x| x.factor != 0.0);
 	}
+	println!("components {:?}", components);
 	components
 }
 
@@ -238,11 +256,11 @@ pub fn get_eq_degree_from_str(eq: &str) -> i32 {
 
 // TODO: MANAGE IF A == 0 !!
 pub fn solve_eq(eq: &str) -> (){
-	let eq: &str = &eq.to_ascii_uppercase();
 	let components: Vec<Component> = get_components(eq);
 	if components.is_empty() {
 		return ();
 	}
+	println!("eq : {:?}", eq);
 	let reduce_form = reduce_eq(components.clone());
 	println!("Reduced form: {}", reduce_form);
 	if reduce_form == "0 = 0" && eq.contains("X") {

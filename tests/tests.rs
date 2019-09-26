@@ -14,15 +14,21 @@ fn degree_poly_1deg(){
 }
 
 #[test]
+fn degree_poly_2deg(){
+	assert_eq!(2,
+	degree("5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"))
+}
+
+#[test]
 fn reduce_poly_2deg(){
 	assert_eq!("4 * X^0 + 4 * X^1 - 9.3 * X^2 = 0",
 	reduce("5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"))
 }
 
 #[test]
-fn degree_poly_2deg(){
-	assert_eq!(2,
-	degree("5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"))
+fn reduce_poly_2deg_human_write(){
+	assert_eq!("4 * X^0 + 4 * X^1 - 9.3 * X^2 = 0",
+	reduce("5 + 4x - 9.3x² = 1"))
 }
 
 #[test]
@@ -43,3 +49,5 @@ fn degree_poly_3deg(){
 //     Ok(_) => assert!(false, "db file should not exist"),
 //     Err(_) => assert!(true),
 // }
+
+// TEST 2 = 2 !
