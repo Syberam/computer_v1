@@ -37,3 +37,9 @@ fn degree_poly_3deg(){
 	assert_eq!(3,
 	degree("8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0"))
 }
+
+// to test errors ?
+// match fs::metadata(path) {
+//     Ok(_) => assert!(false, "db file should not exist"),
+//     Err(_) => assert!(true),
+// }
