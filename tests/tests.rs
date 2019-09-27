@@ -1,5 +1,16 @@
-use computer_v1::reduce_from_str as reduce;
-use computer_v1::get_eq_degree_from_str as degree;
+use computer_v1::get_components;
+use computer_v1::get_degree;
+use computer_v1::reduce_eq;
+
+pub fn reduce(eq: &str) -> String {
+	let components: Vec<Component> = get_components(eq).unwrap();
+	reduce_eq(components)
+}
+
+pub fn degree(eq: &str) -> i32 {
+	let components: Vec<Component> = get_components(eq).unwrap();
+	get_degree(components)
+}
 
 #[test]
 fn reduce_poly_1deg(){
