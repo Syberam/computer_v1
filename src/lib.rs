@@ -32,32 +32,42 @@ fn	get_delta(components: Vec<Component>) -> f64 {
 	b.powi(2) - (4.0 * a * c)
 }
 
-fn	solve_second_deg_eq(components: Vec<Component>) -> () {
+fn	solve_second_deg_eq(components: Vec<Component>) -> String {
 	let delta: f64 = get_delta(components.clone());
-	println!("∆ :{:?}", delta);	
+	let mut output: String = format!("∆ :{:?}", delta);
 	if delta < 0.0 {
-		println!("Discriminant is strictly negative, the solution is:");
-		println!("Ø");
+		output = format!(
+			"{}\n{}\n{}",
+			output,
+			"Discriminant is strictly negative, the solution is:",
+			"Ø"
+		);
 	}
 	else if delta == 0.0 {
-		println!("Discriminant is strictly positive, the solution is:");
-		println!("{}",
-		(-1.0 * components[1].factor) / (2.0 * components[2].factor));
+		output = format!(
+			"{}\n{}\n{}",
+			output,
+			"Discriminant is equal to zero, the solution is:",
+			(-1.0 * components[1].factor) / (2.0 * components[2].factor)
+		);
 	}
 	else if delta > 0.0 {
-		println!("Discriminant is strictly positive, the two solutions are:");
+		output = format!(
+			"{}\n{}\n{}\n{}",
+			output,
+			"Discriminant is strictly positive, the two solutions are:",
 		//(-b - √∆) / 2a	
-		println!("{}",
-		((-1.0 * components[1].factor - delta.sqrt()))
-		/ (2.0 * components[2].factor));
+			((-1.0 * components[1].factor - delta.sqrt()))
+			/ (2.0 * components[2].factor),
 		//(-b + √∆) / 2a
-		println!("{}",
-		((-1.0 * components[1].factor + delta.sqrt()))
-		/ (2.0 * components[2].factor));
+			((-1.0 * components[1].factor + delta.sqrt()))
+			/ (2.0 * components[2].factor)
+		);
 	}
+	output
 }
 
-fn solve_first_deg_eq(mut components: Vec<Component>) -> () {
+fn solve_first_deg_eq(mut components: Vec<Component>) -> String {
 	let mut components_bis: Vec<Component> = components.clone();
 	let mut divid: f64 = 0.0;
 	let mut diviz: f64 = 0.0;
@@ -72,24 +82,24 @@ fn solve_first_deg_eq(mut components: Vec<Component>) -> () {
 	}
 	if diviz == 0.0 {
 		if divid == 0.0 {
-			println!("Every ℝéels numbers can be the solution.");
+			format!("Every ℝéels numbers can be the solution.")
 		}
 		else {
-			println!("No solution is possible.");
+			format!("No solution is possible.")
 		}
 	} else {
 		let solution: f64 = -divid / diviz;
-		println!("The solution is:\n{}", solution);
+		format!("The solution is:\n{}", solution)
 	}
 }
 
-fn solve_zero_deg_eq(components: Vec<Component>) -> () {
+fn solve_zero_deg_eq(components: Vec<Component>) -> String {
 	let factor: f64 = components.last().unwrap().factor;
 	if factor == 0.0 {
-		println!("Every ℝéels numbers can be the solution.");
+		format!("Every ℝéels numbers can be the solution.")
 	}
 	else {
-		println!("No solution is possible.");
+		format!("No solution is possible.")
 	}
 }
 
@@ -263,35 +273,66 @@ pub fn get_eq_degree_from_str(eq: &str) -> i32 {
 	get_degree(components)
 }
 
-pub fn solve_eq(eq: &str) -> (){
+pub fn solve_eq(eq: &str) -> Result<String, Box<dyn std::error::Error>>{
 	let components: Vec<Component> = get_components(eq);
 	let reduce_form = reduce_eq(components.clone());
-	println!("Reduced form: {}", reduce_form);
+	let mut output: String = format!("Reduced form: {}", reduce_form);
 	if reduce_form == "0 = 0" {
-		println!("Every ℝéels numbers can be the solution.");
-		return ();
+		output = format!(
+				"{}\nEvery ℝéels numbers can be the solution.",
+				output
+		);
+		return Ok(output)
 	}
 	if components.len() == 0 {
-		println!("This is not an equation");
-		return ();
+		output = format!(
+				"{}\nThis is not an equation.",
+				output
+		);
+		return Ok(output)
 	}
 	let degree:i32 = get_degree(components.clone());
-	println!("Polynomial degree: {}", degree);
+	output = format!(
+		"{}\nPolynomial degree: {}",
+		output, 
+		degree
+	);
 	if degree > 2 {
-		println!("{} {}", "The polynomial degree is",
-		"stricly greater than 2, I can't solve.")
+		output = format!(
+			"{}\n{} {}",
+			output,
+			"The polynomial degree is",
+			"stricly greater than 2, I can't solve."
+		)
 	}
 	else if degree < 0 {
-		println!("{} {}", "An exponent is",
-		"stricly smaller than 0, I can't solve.")
+		output = format!(
+			"{}\n{} {}",
+			output,
+			"An exponent is",
+			"stricly smaller than 0, I can't solve."
+		)
 	}
 	else if degree == 0 {
-		solve_zero_deg_eq(components);
+		output = format!(
+			"{}\n{}",
+			output,
+			solve_zero_deg_eq(components)
+		);
 	}
 	else if degree == 1 {
-		solve_first_deg_eq(components);
+		output = format!(
+			"{}\n{}",
+			output,
+			solve_first_deg_eq(components)
+		);
 	}
 	else if degree == 2 {
-		solve_second_deg_eq(components);
+		output = format!(
+			"{}\n{}",
+			output,
+			solve_second_deg_eq(components)
+		);
 	}
+	Ok(output)
 }
