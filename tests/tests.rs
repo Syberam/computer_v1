@@ -1,5 +1,6 @@
+use computer_v1::component::Component;
 use computer_v1::get_components;
-use computer_v1::get_degree;
+use computer_v1::utils::get_degree;
 use computer_v1::reduce_eq;
 
 pub fn reduce(eq: &str) -> String {

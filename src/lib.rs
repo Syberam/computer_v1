@@ -1,7 +1,6 @@
 extern crate regex;
-use std::str::FromStr;
 
-mod component;
+pub mod component;
 use component::Component;
 
 mod char_ext;
@@ -12,42 +11,10 @@ use solver::solve_zero_deg_eq;
 use solver::solve_first_deg_eq;
 use solver::solve_second_deg_eq;
 
-pub fn get_degree(components: Vec<Component>) -> i32 {
-	let deg_max: i32 = components.last().unwrap().exponent;
-	let deg_min: i32 = components.first().unwrap().exponent;
-	if deg_max < 3 && deg_min < 0 {
-		return deg_min
-	}
-	deg_max
-}
-
-use regex::Regex;
-
-fn do_poweri(raw_power: &str) -> i32 {
-	let re = Regex::new(r"-?\d+\.?\d?\^?").unwrap();
-	let mut numbers: Vec<f32> = Vec::new();
-	for raw_float in re.captures_iter(raw_power) {
-		numbers.push(f32::from_str(&raw_float[0].replace("^", "")).unwrap());
-	}
-	let mut pow = 1.0;
-	for number in numbers.iter().rev() {
-        pow = number.powf(pow);
-    }
-	return pow as i32
-}
-
-fn do_powerf(raw_power: &str) -> f64 {
-	let re = Regex::new(r"-?\d+\.?\d?\^?").unwrap();
-	let mut numbers: Vec<f64> = Vec::new();
-	for raw_float in re.captures_iter(raw_power) {
-		numbers.push(f64::from_str(&raw_float[0].replace("^", "")).unwrap());
-	}
-	let mut pow = 1.0;
-	for number in numbers.iter().rev() {
-        pow = number.powf(pow);
-    }
-	return pow
-}
+pub mod utils;
+use utils::do_poweri;
+use utils::do_powerf;
+use utils::get_degree;
 
 pub fn get_components(eq: &str) ->
 	Result<Vec<Component>, Box<dyn std::error::Error>> {

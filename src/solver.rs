@@ -1,5 +1,4 @@
-use super::component;
-use component::Component;
+use super::component::Component;
 
 fn	get_delta(components: Vec<Component>) -> f64 {
 	let c: f64 = components[0].factor;
