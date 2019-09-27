@@ -1,3 +1,4 @@
+extern crate regex;
 use std::str::FromStr;
 
 pub trait CharExt {
@@ -101,11 +102,40 @@ fn get_degree(components: Vec<Component>) -> i32 {
 	deg_max
 }
 
+use regex::Regex;
+
+fn do_poweri(raw_power: &str) -> i32 {
+	let re = Regex::new(r"-?\d+\.?\d?\^?").unwrap();
+	let mut numbers: Vec<f32> = Vec::new();
+	for raw_float in re.captures_iter(raw_power) {
+		numbers.push(f32::from_str(&raw_float[0].replace("^", "")).unwrap());
+	}
+	let mut pow = 1.0;
+	for number in numbers.iter().rev() {
+        pow = number.powf(pow);
+    }
+	return pow as i32
+}
+
+fn do_powerf(raw_power: &str) -> f64 {
+	let re = Regex::new(r"-?\d+\.?\d?\^?").unwrap();
+	let mut numbers: Vec<f64> = Vec::new();
+	for raw_float in re.captures_iter(raw_power) {
+		numbers.push(f64::from_str(&raw_float[0].replace("^", "")).unwrap());
+	}
+	let mut pow = 1.0;
+	for number in numbers.iter().rev() {
+        pow = number.powf(pow);
+    }
+	return pow
+}
+
 fn get_components(eq: &str) -> Vec<Component> {
 	let mut components: Vec<Component> = vec![
 		Component{exponent: 0, factor: 0.0},
 		Component{exponent: 1, factor: 0.0},
 		Component{exponent: 2, factor: 0.0}];
+	//let eq = add_missing_x(eq);
 	let eq = eq.replace(char::is_whitespace, "")
 		.replace("^+", "^")
 		.replace("x", "X")
@@ -118,16 +148,12 @@ fn get_components(eq: &str) -> Vec<Component> {
 		.replace(" - ", "-")
 		.replace("-", "+-")
 		.replace("-X", "-1X");
-	println!("simplified eq : {:?}", eq);
 	if !eq.chars().all(CharExt::is_equation) {
-		println!("Entry equation not well format !");
-		components = Vec::new();
-		return components
+		panic!("Entry equation not well format !")
 	}
 	let sub_strings: Vec<&str> = eq.split("=").collect();
 	if sub_strings.len() != 2 {
-		println!("not well format");
-		return components
+		panic!("Entry equation not well format !");
 	}
 	let left_string = match sub_strings[0].chars().nth(0).unwrap() {
 			'+' => sub_strings[0].replacen("+", "0+", 1).clone(),
@@ -139,32 +165,17 @@ fn get_components(eq: &str) -> Vec<Component> {
 	};
 	let left: Vec<&str> = get_substrings(&left_string);
 	let right: Vec<&str> = get_substrings(&right_string);
-	println!("LEFT : {:?}", left);
-	println!("RIGHT : {:?}", right);
 	for elem in left.iter() {
 		let elem = match elem.chars().nth(0).unwrap() {
 			'X' => elem.replace("X", "1X"),
 			_ => elem.to_string(),
 		};
-		let mut sub: Vec<&str> = elem.split("X").collect();
-		println!("SUB :{:?}", sub);
-		for mut part in sub {
-			let split_part: Vec<&str> = part.split("^").collect();
-			part = match split_part.len() {
-				1 => split_part[0],
-				_ => &f64::from_str(split_part[0])
-					.unwrap()
-					.powf(f64::from_str(split_part[0]).unwrap())
-					.to_string(),
-		};
-			
-		}
-		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
+		let sub: Vec<&str> = elem.split("X").collect();
+		let mut factor: f64 = do_powerf(sub[0]);
 		let exponent: i32 = match sub.len() {
 			1 => 0,
-			_ => i32::from_str(sub[1]).unwrap(),
+			_ => do_poweri(sub[1]),
 		};
-		println!("exponent : {:?}", exponent);
 		let mut i:usize = 0;
 		for comp in components.iter() {
 			if comp.exponent == exponent {
@@ -184,10 +195,10 @@ fn get_components(eq: &str) -> Vec<Component> {
 			_ => elem.to_string(),
 		};
 		let sub: Vec<&str> = elem.split("X").collect();
-		let mut factor: f64 = f64::from_str(sub[0]).unwrap();
+		let mut factor: f64 = do_powerf(sub[0]);
 		let exponent: i32 = match sub.len() {
 			1 => 0,
-			_ => i32::from_str(sub[1]).unwrap(),
+			_ => do_poweri(sub[1]),
 		};
 		let mut i:usize = 0;
 		for comp in components.iter() {
@@ -206,7 +217,6 @@ fn get_components(eq: &str) -> Vec<Component> {
 	if components.len() <= 3 {
 		components.retain(|&x| x.factor != 0.0);
 	}
-	println!("components {:?}", components);
 	components
 }
 
@@ -253,17 +263,11 @@ pub fn get_eq_degree_from_str(eq: &str) -> i32 {
 	get_degree(components)
 }
 
-
-// TODO: MANAGE IF A == 0 !!
 pub fn solve_eq(eq: &str) -> (){
 	let components: Vec<Component> = get_components(eq);
-	if components.is_empty() {
-		return ();
-	}
-	println!("eq : {:?}", eq);
 	let reduce_form = reduce_eq(components.clone());
 	println!("Reduced form: {}", reduce_form);
-	if reduce_form == "0 = 0" && eq.contains("X") {
+	if reduce_form == "0 = 0" {
 		println!("Every ℝéels numbers can be the solution.");
 		return ();
 	}
@@ -291,21 +295,3 @@ pub fn solve_eq(eq: &str) -> (){
 		solve_second_deg_eq(components);
 	}
 }
-
-
-
-// $>./computor "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"
-// Reduced form: 4 * X^0 + 4 * X^1 - 9.3 * X^2 = 0
-// Polynomial degree: 2
-// Discriminant is strictly positive, the two solutions are:
-// 0.905239
-// -0.475131
-// $>./computor "5 * X^0 + 4 * X^1 = 4 * X^0"
-// Reduced form: 1 * X^0 + 4 * X^1 = 0
-// Polynomial degree: 1
-// The solution is:
-// -0.25
-// ./computor "8 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 3 * X^0"
-// Reduced form: 5 * X^0 - 6 * X^1 + 0 * X^2 - 5.6 * X^3 = 0
-// Polynomial degree: 3
-// The polynomial degree is stricly greater than 2, I can't solve.

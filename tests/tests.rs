@@ -14,6 +14,30 @@ fn degree_poly_1deg(){
 }
 
 #[test]
+fn reduce_poly_1deg_2(){
+	assert_eq!("-4 * X^0 + 4 * X^1 = 0",
+	reduce("4X = 4"))
+}
+
+#[test]
+fn degree_poly_1deg_2(){
+	assert_eq!(1,
+	degree("4X = 4"))
+}
+
+#[test]
+fn reduce_poly_1deg_3(){
+	assert_eq!("4 * X^1 = 0",
+	reduce("4X = 0"))
+}
+
+#[test]
+fn degree_poly_1deg_3(){
+	assert_eq!(1,
+	degree("4X = 0"))
+}
+
+#[test]
 fn degree_poly_2deg(){
 	assert_eq!(2,
 	degree("5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"))
@@ -29,6 +53,12 @@ fn reduce_poly_2deg(){
 fn reduce_poly_2deg_human_write(){
 	assert_eq!("4 * X^0 + 4 * X^1 - 9.3 * X^2 = 0",
 	reduce("5 + 4x - 9.3x² = 1"))
+}
+
+#[test]
+fn reduce_poly_2deg_many_powers(){
+	assert_eq!("4 * X^0 + 4 * X^1 - 9.3 * X^2 = 0",
+	reduce("5 * X^0^1 + 2^2 * X^0^0 - 9.3 * X^2^1 = 1 * X^0"))
 }
 
 #[test]
