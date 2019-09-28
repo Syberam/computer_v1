@@ -89,9 +89,6 @@ pub fn get_components(eq: &str) ->
 	components = get_components_from_sub_eq(components, left, 1.0);
 	components = get_components_from_sub_eq(components, right, -1.0);
 	components.sort_by(|a, b| a.exponent.cmp(&b.exponent));
-	if components.len() <= 3 {
-		components.retain(|&x| x.factor != 0.0);
-	}
 	Ok(components)
 }
 
@@ -99,6 +96,11 @@ pub fn reduce_eq(components: Vec<Component>)
 	-> Result<String, Box<dyn std::error::Error>> {
 	let mut reduce_string: String = String::new();
 	let mut i = 0;
+	let mut components = components;
+
+	if components.len() <= 3 {
+		components.retain(|&x| x.factor != 0.0);
+	}
 	for comp in components.iter() {
 		if i == 0 {
 			reduce_string.push_str(
@@ -142,7 +144,7 @@ pub fn solve_eq(eq: &str) -> Result<String, Box<dyn std::error::Error>> {
 		);
 		return Ok(output)
 	}
-	let degree:i32 = get_degree(components.clone());
+	let degree:i32 = get_degree(components.clone())?;
 	output = format!(
 		"{}\nPolynomial degree: {}",
 		output, 
@@ -182,7 +184,7 @@ pub fn solve_eq(eq: &str) -> Result<String, Box<dyn std::error::Error>> {
 		output = format!(
 			"{}\n{}",
 			output,
-			solve_second_deg_eq(components)
+			solve_second_deg_eq(components)?
 		);
 	}
 	Ok(output)

@@ -1,12 +1,16 @@
 use super::component::Component;
 
-pub fn get_degree(components: Vec<Component>) -> i32 {
+pub fn get_degree(components: Vec<Component>) 
+	-> Result<i32, Box<dyn std::error::Error>>  {
+	let mut components = components;
+	components.retain(|&x| x.factor != 0.0);
 	let deg_max: i32 = components.last().unwrap().exponent;
 	let deg_min: i32 = components.first().unwrap().exponent;
+
 	if deg_max < 3 && deg_min < 0 {
-		return deg_min
+		return Ok(deg_min)
 	}
-	deg_max
+	Ok(deg_max)
 }
 
 use regex::Regex;

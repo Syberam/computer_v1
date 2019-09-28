@@ -8,9 +8,10 @@ fn	get_delta(components: Vec<Component>) -> f64 {
 	b.powi(2) - (4.0 * a * c)
 }
 
-pub fn	solve_second_deg_eq(components: Vec<Component>) -> String {
+pub fn	solve_second_deg_eq(components: Vec<Component>)
+	-> Result<String, Box<dyn std::error::Error>> {
 	let delta: f64 = get_delta(components.clone());
-	let mut output: String = format!("∆ :{:?}", delta);
+	let mut output: String = format!("∆: {:?}", delta);
 	if delta < 0.0 {
 		output = format!(
 			"{}\n{}\n{}",
@@ -28,19 +29,22 @@ pub fn	solve_second_deg_eq(components: Vec<Component>) -> String {
 		);
 	}
 	else if delta > 0.0 {
+		//(-b - √∆) / 2a	
+		let sol_one = ((((-1.0 * components[1].factor - delta.sqrt()))
+			/ (2.0 * components[2].factor)) * 1000000.0).round() / 1000000.0;
+		//(-b + √∆) / 2a
+		let sol_two = ((((-1.0 * components[1].factor + delta.sqrt()))
+			/ (2.0 * components[2].factor)) * 1000000.0).round() / 1000000.0;
+
 		output = format!(
 			"{}\n{}\n{}\n{}",
 			output,
 			"Discriminant is strictly positive, the two solutions are:",
-		//(-b - √∆) / 2a	
-			((-1.0 * components[1].factor - delta.sqrt()))
-			/ (2.0 * components[2].factor),
-		//(-b + √∆) / 2a
-			((-1.0 * components[1].factor + delta.sqrt()))
-			/ (2.0 * components[2].factor)
+			sol_one,
+			sol_two
 		);
 	}
-	output
+	Ok(output)
 }
 
 pub fn solve_first_deg_eq(mut components: Vec<Component>) -> String {
