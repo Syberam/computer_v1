@@ -21,20 +21,26 @@ pub fn	solve_second_deg_eq(components: Vec<Component>)
 		);
 	}
 	else if delta == 0.0 {
+		let sol = (((-1.0 * components[1].factor)
+			/ (2.0 * components[2].factor)) * 1_000_000.0).round()
+			/ 1_000_000.0;
+
 		output = format!(
 			"{}\n{}\n{}",
 			output,
 			"Discriminant is equal to zero, the solution is:",
-			(-1.0 * components[1].factor) / (2.0 * components[2].factor)
+			sol
 		);
 	}
 	else if delta > 0.0 {
 		//(-b - √∆) / 2a	
 		let sol_one = ((((-1.0 * components[1].factor - delta.sqrt()))
-			/ (2.0 * components[2].factor)) * 1000000.0).round() / 1000000.0;
+			/ (2.0 * components[2].factor)) * 1_000_000.0).round()
+			/ 1_000_000.0;
 		//(-b + √∆) / 2a
 		let sol_two = ((((-1.0 * components[1].factor + delta.sqrt()))
-			/ (2.0 * components[2].factor)) * 1000000.0).round() / 1000000.0;
+			/ (2.0 * components[2].factor)) * 1_000_000.0).round()
+			/ 1_000_000.0;
 
 		output = format!(
 			"{}\n{}\n{}\n{}",
@@ -68,7 +74,8 @@ pub fn solve_first_deg_eq(mut components: Vec<Component>) -> String {
 			format!("No solution is possible.")
 		}
 	} else {
-		let solution: f64 = -divid / diviz;
+		let solution: f64 = ((-divid / diviz) * 1_000_000.0).round()
+			/ 1_000_000.0;
 		format!("The solution is:\n{}", solution)
 	}
 }
