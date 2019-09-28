@@ -34,7 +34,7 @@ pub fn get_components_from_sub_eq(components: Vec<Component>,
 		let mut i:usize = 0;
 		for comp in components.iter() {
 			if comp.exponent == exponent {
-				factor = comp.factor + sign * factor;
+				factor = comp.factor + (sign * factor);
 				components.remove(i);
 				break ;
 			}

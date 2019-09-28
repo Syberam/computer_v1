@@ -110,6 +110,18 @@ fn solve_poly_2deg_human_write(){
 
 #[test]
 //#[ignore]
+fn solve_poly_2deg_human_write_float(){
+	assert_eq!("Reduced form: -5.56 * X^1 + 1 * X^2 = 0\n\
+		Polynomial degree: 2\n\
+		∆: 30.913599999999995\n\
+		Discriminant is strictly positive, the two solutions are:\n\
+		0\n\
+		5.56",
+	solve("x²-5.56x=0"))
+}
+
+#[test]
+//#[ignore]
 fn reduce_poly_2deg_human_write(){
 	assert_eq!("4 * X^0 + 4 * X^1 - 9.3 * X^2 = 0",
 	reduce("5 + 4x - 9.3x² = 1").unwrap())
