@@ -16,6 +16,37 @@ use utils::do_poweri;
 use utils::do_powerf;
 use utils::get_degree;
 
+pub fn get_components_from_sub_eq(components: Vec<Component>,
+	sub_eq: Vec<&str>, sign: f64) -> Vec<Component> {
+	let mut components = components;
+
+	for elem in sub_eq.iter() {
+		let elem = match elem.chars().nth(0) {
+			Some('X') => elem.replace("X", "1X"),
+			_ => elem.to_string(),
+		};
+		let sub: Vec<&str> = elem.split("X^").collect();
+		let mut factor: f64 = do_powerf(sub[0]);
+		let exponent: i32 = match sub.len() {
+			1 => 0,
+			_ => do_poweri(sub[1]),
+		};
+		let mut i:usize = 0;
+		for comp in components.iter() {
+			if comp.exponent == exponent {
+				factor = comp.factor + sign * factor;
+				components.remove(i);
+				break ;
+			}
+			i = i + 1;
+		}
+		let comp: Component = Component{
+			exponent: exponent, factor: factor};
+		components.push(comp);
+	}
+	components
+}
+
 pub fn get_components(eq: &str) ->
 	Result<Vec<Component>, Box<dyn std::error::Error>> {
 	let mut components: Vec<Component> = vec![
@@ -23,82 +54,42 @@ pub fn get_components(eq: &str) ->
 		Component{exponent: 1, factor: 0.0},
 		Component{exponent: 2, factor: 0.0}];
 	let eq = eq.replace(char::is_whitespace, "")
-		.replace("^+", "^")
 		.replace("x", "X")
+		.replace(" + ", "+")
+		.replace(" - ", "-")
+		.replace("-", "+-")
 		.replace("³", "^3")
 		.replace("²", "^2")
 		.replace("*", "")
 		.replace("X", "X^1")
-		.replace("X^1^", "X")
-		.replace(" + ", "+")
-		.replace(" - ", "-")
-		.replace("-", "+-")
+		.replace("^+", "^")
+		.replace("X^1^", "X^")
+
 		.replace("-X", "-1X");
+	println!("eq : {:?}", eq);
 	if !eq.chars().all(CharExt::is_equation) {
 		Err(format!("{}", "Entry equation not well format !"))?
 	}
+	if !eq.contains('X') {
+		Err(format!("{}", "This is not an equation !"))?
+	}
 	let sub_strings: Vec<&str> = eq.split("=").collect();
-	if sub_strings.len() != 2 {
+	if sub_strings.len() != 2
+		|| sub_strings[0].is_empty() || sub_strings[1].is_empty(){
 		Err(format!("{}", "Entry equation not well format !"))?
 	}
-	let left_string = match sub_strings[0].chars().nth(0).unwrap() {
-			'+' => sub_strings[0].replacen("+", "0+", 1).clone(),
+	let left_string = match sub_strings[0].chars().nth(0) {
+			Some('+') => sub_strings[0].replacen("+", "0+", 1).clone(),
 			_ => format!("0+{}",sub_strings[0]),
 	};
-	let right_string = match sub_strings[1].chars().nth(0).unwrap() {
-			'+' => sub_strings[1].replacen("+", "0+", 1).clone(),
+	let right_string = match sub_strings[1].chars().nth(0) {
+			Some('+') => sub_strings[1].replacen("+", "0+", 1).clone(),
 			_ => format!("0+{}",sub_strings[1]),
 	};
 	let left: Vec<&str> = left_string.split("+").to_owned().collect();
 	let right: Vec<&str> = right_string.split("+").to_owned().collect();
-	for elem in left.iter() {
-		let elem = match elem.chars().nth(0).unwrap() {
-			'X' => elem.replace("X", "1X"),
-			_ => elem.to_string(),
-		};
-		let sub: Vec<&str> = elem.split("X").collect();
-		let mut factor: f64 = do_powerf(sub[0]);
-		let exponent: i32 = match sub.len() {
-			1 => 0,
-			_ => do_poweri(sub[1]),
-		};
-		let mut i:usize = 0;
-		for comp in components.iter() {
-			if comp.exponent == exponent {
-				factor = comp.factor + factor;
-				components.remove(i);
-				break ;
-			}
-			i = i + 1;
-		}
-		let comp: Component = Component{
-			exponent: exponent, factor: factor};
-		components.push(comp);
-	}
-	for elem in right.iter(){
-		let elem = match elem.chars().nth(0).unwrap() {
-			'X' => elem.replace("X", "1X"),
-			_ => elem.to_string(),
-		};
-		let sub: Vec<&str> = elem.split("X").collect();
-		let mut factor: f64 = do_powerf(sub[0]);
-		let exponent: i32 = match sub.len() {
-			1 => 0,
-			_ => do_poweri(sub[1]),
-		};
-		let mut i:usize = 0;
-		for comp in components.iter() {
-			if comp.exponent == exponent {
-				factor = comp.factor - factor;
-				components.remove(i);
-				break ;
-			}
-			i = i + 1;
-		}
-		let comp: Component = Component{
-			exponent: exponent, factor: factor};
-		components.push(comp);
-	}
+	components = get_components_from_sub_eq(components, left, 1.0);
+	components = get_components_from_sub_eq(components, right, -1.0);
 	components.sort_by(|a, b| a.exponent.cmp(&b.exponent));
 	if components.len() <= 3 {
 		components.retain(|&x| x.factor != 0.0);
@@ -106,7 +97,8 @@ pub fn get_components(eq: &str) ->
 	Ok(components)
 }
 
-pub fn reduce_eq(components: Vec<Component>) -> String {
+pub fn reduce_eq(components: Vec<Component>)
+	-> Result<String, Box<dyn std::error::Error>> {
 	let mut reduce_string: String = String::new();
 	let mut i = 0;
 	for comp in components.iter() {
@@ -131,14 +123,12 @@ pub fn reduce_eq(components: Vec<Component>) -> String {
 		reduce_string.push_str("0");
 	}
 	reduce_string.push_str(" = 0".into());
-	reduce_string
+	Ok(reduce_string)
 }
-
-
 
 pub fn solve_eq(eq: &str) -> Result<String, Box<dyn std::error::Error>> {
 	let components: Vec<Component> = get_components(eq)?;
-	let reduce_form = reduce_eq(components.clone());
+	let reduce_form = reduce_eq(components.clone())?;
 	let mut output: String = format!("Reduced form: {}", reduce_form);
 	if reduce_form == "0 = 0" {
 		output = format!(
