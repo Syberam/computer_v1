@@ -64,9 +64,7 @@ pub fn get_components(eq: &str) ->
 		.replace("X", "X^1")
 		.replace("^+", "^")
 		.replace("X^1^", "X^")
-
 		.replace("-X", "-1X");
-	println!("eq : {:?}", eq);
 	if !eq.chars().all(CharExt::is_equation) {
 		Err(format!("{}", "Entry equation not well format !"))?
 	}
