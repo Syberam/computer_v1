@@ -26,10 +26,10 @@ pub fn do_poweri(raw_power: &str)
 	let mut pow = 1.0;
 	for number in numbers.iter().rev() {
         pow = number.powf(pow);
+		if pow.is_nan() {
+			Err(format!("{} {}", raw_power, "is not a valid number !"))?
+		}
     }
-	if pow.is_nan() {
-		Err(format!("{} {}", raw_power, "is not a valid number !"))?
-	}
 	Ok(pow as i32)
 }
 
@@ -43,9 +43,10 @@ pub fn do_powerf(raw_power: &str)
 	let mut pow = 1.0;
 	for number in numbers.iter().rev() {
         pow = number.powf(pow);
+		if pow.is_nan() {
+			Err(format!("{} {}", raw_power, "is not a valid number !"))?
+		}
     }
-	if pow.is_nan() {
-		Err(format!("{} {}", raw_power, "is not a valid number !"))?
-	}
+
 	Ok(pow)
 }
