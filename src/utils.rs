@@ -16,7 +16,8 @@ pub fn get_degree(components: Vec<Component>)
 use regex::Regex;
 use std::str::FromStr;
 
-pub fn do_poweri(raw_power: &str) -> i32 {
+pub fn do_poweri(raw_power: &str) 
+	-> Result<i32, Box<dyn std::error::Error>> {
 	let re = Regex::new(r"-?\d+\.?\d*\^?").unwrap();
 	let mut numbers: Vec<f32> = Vec::new();
 	for raw_float in re.captures_iter(raw_power) {
@@ -26,10 +27,14 @@ pub fn do_poweri(raw_power: &str) -> i32 {
 	for number in numbers.iter().rev() {
         pow = number.powf(pow);
     }
-	return pow as i32
+	if pow.is_nan() {
+		Err(format!("{} {}", raw_power, "is not a valid number !"))?
+	}
+	Ok(pow as i32)
 }
 
-pub fn do_powerf(raw_power: &str) -> f64 {
+pub fn do_powerf(raw_power: &str)
+	-> Result<f64, Box<dyn std::error::Error>> {
 	let re = Regex::new(r"-?\d+\.?\d*\^?").unwrap();
 	let mut numbers: Vec<f64> = Vec::new();
 	for raw_float in re.captures_iter(raw_power) {
@@ -39,5 +44,8 @@ pub fn do_powerf(raw_power: &str) -> f64 {
 	for number in numbers.iter().rev() {
         pow = number.powf(pow);
     }
-	return pow
+	if pow.is_nan() {
+		Err(format!("{} {}", raw_power, "is not a valid number !"))?
+	}
+	Ok(pow)
 }

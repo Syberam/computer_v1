@@ -17,7 +17,9 @@ use utils::do_powerf;
 use utils::get_degree;
 
 pub fn get_components_from_sub_eq(components: Vec<Component>,
-	sub_eq: Vec<&str>, sign: f64) -> Vec<Component> {
+	sub_eq: Vec<&str>, sign: f64) -> 
+	Result<Vec<Component>, Box<dyn std::error::Error>> {
+
 	let mut components = components;
 
 	for elem in sub_eq.iter() {
@@ -26,10 +28,10 @@ pub fn get_components_from_sub_eq(components: Vec<Component>,
 			_ => elem.to_string(),
 		};
 		let sub: Vec<&str> = elem.split("X^").collect();
-		let mut factor: f64 = do_powerf(sub[0]);
+		let mut factor: f64 = do_powerf(sub[0])?;
 		let exponent: i32 = match sub.len() {
 			1 => 0,
-			_ => do_poweri(sub[1]),
+			_ => do_poweri(sub[1])?,
 		};
 		let mut i:usize = 0;
 		for comp in components.iter() {
@@ -44,7 +46,7 @@ pub fn get_components_from_sub_eq(components: Vec<Component>,
 			exponent: exponent, factor: factor};
 		components.push(comp);
 	}
-	components
+	Ok(components)
 }
 
 pub fn get_components(eq: &str) ->
@@ -86,14 +88,14 @@ pub fn get_components(eq: &str) ->
 	};
 	let left: Vec<&str> = left_string.split("+").to_owned().collect();
 	let right: Vec<&str> = right_string.split("+").to_owned().collect();
-	components = get_components_from_sub_eq(components, left, 1.0);
-	components = get_components_from_sub_eq(components, right, -1.0);
+	components = get_components_from_sub_eq(components, left, 1.0)?;
+	components = get_components_from_sub_eq(components, right, -1.0)?;
 	components.sort_by(|a, b| a.exponent.cmp(&b.exponent));
 	Ok(components)
 }
 
-pub fn reduce_eq(components: Vec<Component>)
-	-> Result<String, Box<dyn std::error::Error>> {
+pub fn reduce_eq(components: Vec<Component>) ->
+	Result<String, Box<dyn std::error::Error>> {
 	let mut reduce_string: String = String::new();
 	let mut i = 0;
 	let mut components = components;
