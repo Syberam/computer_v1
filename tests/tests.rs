@@ -241,3 +241,5 @@ fn test_no_error_consecutive_x_not_supported() {
 
 	}
 }
+
+//test : make && ./computer_v1 " ++++----+++-2x= 0"
