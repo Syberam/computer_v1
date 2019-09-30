@@ -222,4 +222,22 @@ fn test_error_not_an_equation4() {
 	}
 }
 
-// test XXX
+#[test]
+//#[ignore]
+fn test_error_consecutive_x_not_supported() {
+	match reduce("3 + 2Xx - 7 = 0") {
+		Ok(_) => assert!(false,
+			"Should return \"Error: Entry equation not well format !\""),
+		Err(_) => assert!(true),
+	}
+}
+
+#[test]
+//#[ignore]
+fn test_no_error_consecutive_x_not_supported() {
+	match reduce("3 + 2X^2 - 7 = 0") {
+		Ok(_) => assert!(true),
+		Err(_) => assert!(false, "Should not return an error ! "),
+
+	}
+}

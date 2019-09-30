@@ -67,7 +67,7 @@ pub fn get_components(eq: &str) ->
 		.replace("^+", "^")
 		.replace("X^1^", "X^")
 		.replace("-X", "-1X");
-	if !eq.chars().all(CharExt::is_equation) {
+	if !eq.chars().all(CharExt::is_equation) || eq.contains("X^1X") {
 		Err(format!("{}", "Entry equation not well format !"))?
 	}
 	if !eq.contains('X') {
