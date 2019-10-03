@@ -1,5 +1,23 @@
 use super::component::Component;
 
+// fn sqrt_handmade(delta: f64) -> f64 {
+// 	let mut rsqt = 0.1;
+// 	let mut n = 0;
+
+// // rsqt^2 = a
+// // 2 * rsqt^2 = rsqt^2 + a
+// // rsqt = (rsqt^2 + a)/(2 * rsqt)
+// // rsqt = (rsqt + a/rsqt)/2
+// // rsqt = 0.5 * (rsqt + a / rsqt)
+
+
+// 	while n < 20 {
+// 		rsqt = 0.5 * (rsqt + delta / rsqt);
+// 		n = n + 1;
+// 	}
+// 	return rsqt
+// }
+
 fn	get_delta(components: Vec<Component>) -> f64 {
 	let c: f64 = components[0].factor;
 	let b: f64 = components[1].factor;
