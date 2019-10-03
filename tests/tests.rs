@@ -234,6 +234,16 @@ fn test_error_consecutive_x_not_supported() {
 
 #[test]
 //#[ignore]
+fn test_error_consecutive_x_digit_not_supported() {
+	match reduce("3 + 2X1x - 7 = 0") {
+		Ok(_) => assert!(false,
+			"Should return \"Error: Entry equation not well format !\""),
+		Err(_) => assert!(true),
+	}
+}
+
+#[test]
+//#[ignore]
 fn test_no_error_consecutive_x_not_supported() {
 	match reduce("3 + 2X^2 - 7 = 0") {
 		Ok(_) => assert!(true),
@@ -241,6 +251,8 @@ fn test_no_error_consecutive_x_not_supported() {
 
 	}
 }
+
+
 
 //test : make && ./computer_v1 " ++++----+++-2x= 0"
 

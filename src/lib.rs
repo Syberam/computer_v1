@@ -23,6 +23,9 @@ pub fn get_components_from_sub_eq(components: Vec<Component>,
 	let mut components = components;
 
 	for elem in sub_eq.iter() {
+		if elem.matches("X").count() > 1 {
+			return Err(format!("{}", "Entry equation not well format !"))?
+		}
 		let elem = match elem.chars().nth(0) {
 			Some('X') => elem.replace("X", "1X"),
 			_ => elem.to_string(),
