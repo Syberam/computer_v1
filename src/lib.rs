@@ -58,7 +58,7 @@ pub fn get_components(eq: &str) ->
 		Component{exponent: 0, factor: 0.0},
 		Component{exponent: 1, factor: 0.0},
 		Component{exponent: 2, factor: 0.0}];
-	let eq = eq.replace(char::is_whitespace, "")
+	let mut eq = eq.replace(char::is_whitespace, "")
 		.replace("x", "X")
 		.replace(" + ", "+")
 		.replace(" - ", "-")
@@ -75,6 +75,9 @@ pub fn get_components(eq: &str) ->
 	}
 	if !eq.contains('X') {
 		Err(format!("{}", "This is not an equation !"))?
+	}
+	if !eq.contains('=') {
+		eq = eq + "= 0";
 	}
 	let sub_strings: Vec<&str> = eq.split("=").collect();
 	if sub_strings.len() != 2

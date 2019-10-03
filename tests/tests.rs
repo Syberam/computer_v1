@@ -290,6 +290,9 @@ fn _______________________correction_______________________() {
 				(-3 - i√39) / 6\n\
 				(-3 + i√39) / 6",
 				solve("5 * X^0 + 3 * X^1 + 3 * X^2 = 1 * X^0 + 0 * X^1"));
+	assert_eq!("Reduced form: X = X\n\
+				Every ℝéels numbers can be the solution.",
+				solve("5 * X^0 - 5 * X^0"));
 
 //     assert_eq!(Polynomial::from_str("5 * X^0 - 5 * X^0").unwrap_or_default().get_non_zero_constant(),
 //                Some(NonZeroConstant::SolubleEverywhere));
