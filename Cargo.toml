@@ -1,5 +1,5 @@
 [package]
-name = "computer_v1"
+name = "computor"
 version = "0.1.0"
 authors = ["Sylvain BONNEFON <sylvainbonnefon@hotmail.com>"]
 edition = "2018"

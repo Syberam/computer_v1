@@ -4,7 +4,7 @@ This little project is a 2 degrees equation solver.
 I did it to start learning rust.
 
 ## Run it
-- make && ./computer_v1 "__\_\_your_equation\_\___"
+- make && ./computor "__\_\_your_equation\_\___"
 
 ## Run tests
 - make tests

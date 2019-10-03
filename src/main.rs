@@ -1,5 +1,5 @@
 use std::env;
-use computer_v1::solve_eq;
+use computor::solve_eq;
 
 fn faillable_main() -> Result<String, Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();

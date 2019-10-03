@@ -1,8 +1,8 @@
-use computer_v1::component::Component;
-use computer_v1::get_components;
-use computer_v1::utils::get_degree;
-use computer_v1::reduce_eq;
-use computer_v1::solve_eq;
+use computor::component::Component;
+use computor::get_components;
+use computor::utils::get_degree;
+use computor::reduce_eq;
+use computor::solve_eq;
 
 pub fn reduce(eq: &str) -> Result<String, Box<dyn std::error::Error>> {
 	let components: Vec<Component> = get_components(eq)?;
@@ -254,7 +254,7 @@ fn test_no_error_consecutive_x_not_supported() {
 
 
 
-//test : make && ./computer_v1 " ++++----+++-2x= 0"
+//test : make && ./computor " ++++----+++-2x= 0"
 
 #[test]
 fn _______________________correction_______________________() {
