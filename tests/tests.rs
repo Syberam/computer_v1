@@ -293,17 +293,33 @@ fn _______________________correction_______________________() {
 	assert_eq!("Reduced form: X = X\n\
 				Every ℝéels numbers can be the solution.",
 				solve("5 * X^0 - 5 * X^0"));
-
-//     assert_eq!(Polynomial::from_str("5 * X^0 - 5 * X^0").unwrap_or_default().get_non_zero_constant(),
-//                Some(NonZeroConstant::SolubleEverywhere));
-//     assert_eq!(Polynomial::from_str("3 * X^0 - 8 * X^0").unwrap_or_default().get_non_zero_constant(),
-//                Some(NonZeroConstant::Unsoluble));
-//     assert_eq!(Polynomial::from_str("5 * X^0 - 4 * X^0 - 7 * X^1").unwrap_or_default().get_linear(),
-//                Some(Linear::Soluble(0.14285714285714285)));
-//     assert_eq!(Polynomial::from_str("5 * X^0 + 13 * X^1 + 3 * X^2 - 1 *X^0 - 1 * X^1").unwrap_or_default().get_quadratic(),
-//                Some(Quadratic::Positive(-0.3670068381445481, -3.632993161855452)));
-//     assert_eq!(Polynomial::from_str("6 * X^0 + 11 * X^1 + 5 * X^2 - 1 * X^0 - 1 * X^1").unwrap_or_default().get_quadratic(),
-//                Some(Quadratic::Null(-1.0)));
-//     assert_eq!(Polynomial::from_str("5 * X^0 + 3 * X^1 + 3 * X^2 - 1 * X^0 - 0 * X^1").unwrap_or_default().get_quadratic(),
-//                Some(Quadratic::Negative(3.0, 3.0)));
+	assert_eq!("Reduced form: -5 * X^0 = 0\n\
+				Polynomial degree: 0\n\
+				No solution is possible.",
+				solve("3 * X^0 - 8 * X^0"));
+	assert_eq!("Reduced form: 1 * X^0 - 7 * X^1 = 0\n\
+				Polynomial degree: 1\n\
+				The solution is:\n\
+				0.142857",
+				solve("5 * X^0 - 4 * X^0 - 7 * X^1"));
+	assert_eq!("Reduced form: 4 * X^0 + 12 * X^1 + 3 * X^2 = 0\n\
+				Polynomial degree: 2\n\
+				∆: 96.0\n\
+				Discriminant is strictly positive, the two solutions are:\n\
+				-3.632993\n\
+				-0.367007",
+				solve("5 * X^0 + 13 * X^1 + 3 * X^2 - 1 *X^0 - 1 * X^1"));
+	assert_eq!("Reduced form: 5 * X^0 + 10 * X^1 + 5 * X^2 = 0\n\
+				Polynomial degree: 2\n\
+				∆: 0.0\n\
+				Discriminant is equal to zero, the solution is:\n\
+				-1",
+				solve("6 * X^0 + 11 * X^1 + 5 * X^2 - 1 * X^0 - 1 * X^1"));
+	assert_eq!("Reduced form: 4 * X^0 + 3 * X^1 + 3 * X^2 = 0\n\
+				Polynomial degree: 2\n\
+				∆: -39.0\n\
+				Discriminant is strictly negative, the complexe solutions are:\n\
+				(-3 - i√39) / 6\n\
+				(-3 + i√39) / 6",
+				solve("5 * X^0 + 3 * X^1 + 3 * X^2 - 1 * X^0 - 0 * X^1"));
 }
