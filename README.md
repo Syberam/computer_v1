@@ -3,6 +3,12 @@
 This little project is a 2 degrees equation solver.
 I did it to start learning rust.
 
+## Run it
+- make && ./computer_v1 "__your_equation__"
+
+## Run it
+- make tests
+
 #### No externe mathematical library.
 only use:
 f64.sqrt() and f64.powi() which is are processor call instructions (llvm, not a math library)
