@@ -125,9 +125,11 @@ pub fn reduce_eq(components: Vec<Component>) ->
 		i = i + 1;
 	}
 	if components.len() == 0 {
-		reduce_string.push_str("0");
+		reduce_string.push_str("X = X");
 	}
-	reduce_string.push_str(" = 0".into());
+	else {
+		reduce_string.push_str(" = 0".into());
+	}
 	Ok(reduce_string)
 }
 
@@ -135,7 +137,7 @@ pub fn solve_eq(eq: &str) -> Result<String, Box<dyn std::error::Error>> {
 	let components: Vec<Component> = get_components(eq)?;
 	let reduce_form = reduce_eq(components.clone())?;
 	let mut output: String = format!("Reduced form: {}", reduce_form);
-	if reduce_form == "0 = 0" {
+	if reduce_form == "X = X" {
 		output = format!(
 				"{}\nEvery ℝéels numbers can be the solution.",
 				output

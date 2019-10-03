@@ -258,7 +258,7 @@ fn test_no_error_consecutive_x_not_supported() {
 
 #[test]
 fn _______________________correction_______________________() {
-	assert_eq!("Reduced form: 0 = 0\n\
+	assert_eq!("Reduced form: X = X\n\
 				Every ℝéels numbers can be the solution.",
 				solve("5 * X^0 = 5 * X^0"));
 	assert_eq!("Reduced form: -5 * X^0 = 0\n\
@@ -291,8 +291,6 @@ fn _______________________correction_______________________() {
 				(-3 + i√39) / 6",
 				solve("5 * X^0 + 3 * X^1 + 3 * X^2 = 1 * X^0 + 0 * X^1"));
 
-//     assert_eq!(Polynomial::from_str("5 * X^0 + 3 * X^1 + 3 * X^2 = 1 * X^0 + 0 * X^1").unwrap_or_default().get_quadratic(),
-//                Some(Quadratic::Negative(3.0, 3.0)));
 //     assert_eq!(Polynomial::from_str("5 * X^0 - 5 * X^0").unwrap_or_default().get_non_zero_constant(),
 //                Some(NonZeroConstant::SolubleEverywhere));
 //     assert_eq!(Polynomial::from_str("3 * X^0 - 8 * X^0").unwrap_or_default().get_non_zero_constant(),
