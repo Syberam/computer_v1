@@ -13,11 +13,20 @@ pub fn	solve_second_deg_eq(components: Vec<Component>)
 	let delta: f64 = get_delta(components.clone());
 	let mut output: String = format!("∆: {:?}", delta);
 	if delta < 0.0 {
+		let sol_one = format!("(-{} - i√{}) / {}",
+			components[2].factor,
+			-1.0 * delta,
+			2.0 * components[2].factor );
+		let sol_two = format!("(-{} + i√{}) / {}",
+			components[2].factor,
+			-1.0 * delta,
+			2.0 * components[2].factor );
 		output = format!(
-			"{}\n{}\n{}",
+			"{}\n{}\n{}\n{}",
 			output,
-			"Discriminant is strictly negative, the solution is:",
-			"Ø"
+			"Discriminant is strictly negative, the complexe solutions are:",
+			sol_one,
+			sol_two,
 		);
 	}
 	else if delta == 0.0 {
