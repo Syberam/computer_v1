@@ -2,6 +2,10 @@
 
 This little project is a 2 degrees equation solver.
 I did it to start learning rust.
+- can solve eqaution from 0 to 2 degrees.
+- give the complexe results of second degreee equation with delta < 0
+- can solve "human write" expressions
+
 
 ## Run it
 - make && ./computor "__\_\_your_equation\_\___"
