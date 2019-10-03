@@ -81,7 +81,7 @@ pub fn solve_first_deg_eq(mut components: Vec<Component>) -> String {
 }
 
 pub fn solve_zero_deg_eq(components: Vec<Component>) -> String {
-	let factor: f64 = components.last().unwrap().factor;
+	let factor: f64 = components.first().unwrap().factor;
 	if factor == 0.0 {
 		format!("Every ℝéels numbers can be the solution.")
 	}
